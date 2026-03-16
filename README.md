@@ -25,13 +25,22 @@ It wrote the code, ran away, and now the game is unplayable.
 
 ## 📝 Document Your Experience
 
-- [ ] Describe the game's purpose.
-- [ ] Detail which bugs you found.
-- [ ] Explain what fixes you applied.
+- [x] **Game's purpose:** A number-guessing game where you guess a number within a range (based on difficulty). You get hints (Higher/Lower) and have a limited number of attempts.
+- [x] **Bugs found:** (1) State bug—secret number changed on every Submit; (2) Hints were reversed—said "Go HIGHER!" when guess was too high; (3) Score tracked inconsistently.
+- [x] **Fixes applied:** Used `st.session_state` for secret/attempts/score; removed alternating int/str bug; fixed hints in `check_guess` (too high → "Go LOWER!"); refactored logic into `logic_utils.py`; all tests pass.
 
 ## 📸 Demo
 
-- [ ] [Insert a screenshot of your fixed, winning game here]
+All tests pass:
+
+```
+tests/test_game_logic.py::test_winning_guess PASSED
+tests/test_game_logic.py::test_guess_too_high PASSED
+tests/test_game_logic.py::test_guess_too_low PASSED
+============================== 3 passed in 0.01s ===============================
+```
+
+(Optional: Add a screenshot of your winning game above.)
 
 ## 🚀 Stretch Features
 
