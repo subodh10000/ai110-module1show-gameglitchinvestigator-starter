@@ -8,7 +8,7 @@ Answer each question in 3 to 5 sentences. Be specific and honest about what actu
 - List at least two concrete bugs you noticed at the start  
   (for example: "the hints were backwards").
 
-The game was a number-guessing game with a sidebar for difficulty, a text input for guesses, and Developer Debug Info showing the secret. **Bug 1 (State Bug):** The secret number in the debug panel changed every time you clicked Submit—it never stayed the same, so you couldn't win even when you knew the answer. **Bug 2 (Hints):** When the guess was too high, it said "Go HIGHER!" instead of "Go LOWER!", and vice versa. **Bug 3 (Score):** The score logic was inconsistent—it added or subtracted points in odd ways based on attempt parity, and didn't reliably reflect wins vs. losses.
+I ran the game and saw a number-guessing UI with a sidebar for difficulty and Developer Debug Info. I noticed three bugs: (1) The secret number in the debug panel changed every time I clicked Submit, so I couldn't win even when I knew the answer. (2) The hints were reversed—when my guess was too high it said "Go HIGHER!" instead of "Go LOWER!" (3) The score changed in odd ways and didn't seem to reflect wins and losses correctly.
 
 ---
 
@@ -18,7 +18,7 @@ The game was a number-guessing game with a sidebar for difficulty, a text input 
 - Give one example of an AI suggestion that was correct (including what the AI suggested and how you verified the result).
 - Give one example of an AI suggestion that was incorrect or misleading (including what the AI suggested and how you verified the result).
 
-I used Cursor (with AI chat and Agent mode) to fix the bugs and refactor. **Correct suggestion:** The AI identified that the secret was being converted to a string on every other attempt (`if st.session_state.attempts % 2 == 0: secret = str(...)`), which broke comparisons. Removing that and always using the int secret fixed the state bug—verified by running the app and seeing the secret stay the same in Debug Info until New Game. **Incorrect/misleading:** None in this session; the AI’s fixes were accurate and tests passed.
+I used Cursor (AI chat and Agent mode) as a companion. I asked it to fix the state bug and to move the logic into `logic_utils.py`. When it suggested removing the alternating int/str conversion and always using `st.session_state.secret` as an int, I ran the app and confirmed the secret stayed the same until I clicked New Game. I also asked it to fix the Higher/Lower hints; it swapped them, and I verified by playing a few rounds. I didn't get any incorrect suggestions this time, but I still ran the app and pytest before accepting the changes.
 
 ---
 
@@ -29,7 +29,7 @@ I used Cursor (with AI chat and Agent mode) to fix the bugs and refactor. **Corr
   and what it showed you about your code.
 - Did AI help you design or understand any tests? How?
 
-I checked fixes by running the app and by running `pytest tests/ -v`. **pytest:** `test_guess_too_high` and `test_guess_too_low` confirm that `check_guess(60, 50)` returns "Too High" and `check_guess(40, 50)` returns "Too Low". All three tests passed after the refactor. The AI updated the tests to unpack the `(outcome, message)` tuple from `check_guess` so they match the new return format.
+I decided a bug was fixed by running the app and by running `pytest tests/ -v`. I played the game manually to see if the secret stayed the same and if the hints were correct. I ran pytest to confirm `check_guess` behaved correctly—e.g., `check_guess(60, 50)` returns "Too High" and `check_guess(40, 50)` returns "Too Low." The AI updated the tests to unpack the tuple from `check_guess`, and I ran them to make sure they passed.
 
 ---
 
@@ -37,7 +37,7 @@ I checked fixes by running the app and by running `pytest tests/ -v`. **pytest:*
 
 - How would you explain Streamlit "reruns" and session state to a friend who has never used Streamlit?
 
-Streamlit reruns the whole script from top to bottom every time you interact (click a button, change a widget). Normal variables are recreated each run, so they reset. That’s why the secret number kept changing. `st.session_state` is a special dictionary that survives between reruns. If you store values there (e.g. `st.session_state.secret`), they stay the same until you change or delete them. For a game, you need session state for persistent data like the secret number and score.
+Streamlit reruns the whole script every time you interact with the app. Normal variables get recreated each run, so they reset. `st.session_state` is a dictionary that survives between reruns, so values like the secret number and score persist until you change them. I learned this from the AI's explanation and from seeing how the state bug behaved before and after the fix.
 
 ---
 
@@ -48,4 +48,4 @@ Streamlit reruns the whole script from top to bottom every time you interact (cl
 - What is one thing you would do differently next time you work with AI on a coding task?
 - In one or two sentences, describe how this project changed the way you think about AI generated code.
 
-**Reuse:** Run `pytest` after every change. It’s fast and catches regressions quickly. **Do differently:** Run the app manually before and after fixes to confirm behavior, not just rely on unit tests. **Takeaway:** AI-generated code can be close to correct but still have subtle bugs (e.g. wrong hints, state bugs). Treat it as a starting point and always verify with tests and manual checks.
+I want to keep running `pytest` after changes to catch regressions quickly. Next time, I'd try to understand the AI's suggestions more deeply before accepting them, instead of just applying fixes. This project showed me that AI-generated code can look right but still have subtle bugs, so I should always verify with tests and manual checks instead of trusting it blindly.
